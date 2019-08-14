@@ -85,6 +85,22 @@ npm install xcrud-tpl -g
 
 点击确定，即可生成代码。（ **注意：** 要在配置的`./template/`文件夹中写好 ejs模板 哦）
 
+## 命令行参数
+
+使用 `xcrud --help` 查看帮助
+
+```bash
+$ xcrud --help
+
+Usage: app [options]
+
+Options:
+  -V, --version            output the version number
+  -p, --port <number>      set port (default: 6688)
+  -c, --config <fileName>  set profile name (default: "xcrud.json")
+  -h, --help               output usage information
+```
+
 ## 优点
 
 - 无侵入，只需在项目中添加 json 配置文件，写好模板即可
