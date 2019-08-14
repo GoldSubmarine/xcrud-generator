@@ -1,0 +1,42 @@
+{
+    "db": {
+        "host": "192.168.1.100",
+        "user": "root",
+        "password": "root",
+        "database": "xcrud-test-db"
+    },
+    "mixin": {
+        "package": "com.js"
+    },
+    "fields": [
+        {
+            "title": "启用禁用",
+            "name": "enable",
+            "default": "",
+            "type": "select",
+            "options": [
+                { "label": "启用", "value": "enable" },
+                { "label": "冻结", "value": "disable" }
+            ]
+        },
+        {
+            "title": "地址",
+            "name": "address",
+            "default": "",
+            "type": "input"
+        }
+    ],
+    "input": {
+        "dir": "./template/"
+    },
+    "output": [
+        {
+            "template": "controller.ejs",
+            "path": "./gen/<%= tableName %>/controller/Controller.java"
+        },
+        {
+            "template": "dao.ejs",
+            "path": "./gen/<%= tableName %>/dao/dao.java"
+        }
+    ]
+}

@@ -1,0 +1,56 @@
+{
+  "name": "xcrud-tpl",
+  "version": "0.1.0",
+  "repository": "https://github.com/GoldSubmarine/xcrud-tpl.git",
+  "author": "charles <997462392@qq.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "chalk": "^2.4.2",
+    "commander": "^3.0.0",
+    "ejs": "^2.6.2",
+    "express": "^4.17.1",
+    "glob": "^7.1.4",
+    "mkdirp": "^0.5.1",
+    "mysql": "^2.17.1"
+  },
+  "devDependencies": {
+    "monaco-editor-webpack-plugin": "^1.7.0",
+    "@vue/cli-plugin-babel": "^3.10.0",
+    "@vue/cli-service": "^3.10.0",
+    "axios": "^0.19.0",
+    "core-js": "^2.6.5",
+    "element-ui": "^2.11.1",
+    "monaco-editor": "^0.17.1",
+    "vue": "^2.6.10",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "postcss": {
+    "plugins": {
+      "autoprefixer": {}
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions"
+  ],
+  "main": "app.js",
+  "keywords": [
+    "crud",
+    "template",
+    "generate"
+  ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "app.js"
+  ],
+  "bin": {
+    "xcrud": "app.js"
+  }
+}
