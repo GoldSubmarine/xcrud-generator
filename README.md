@@ -16,7 +16,7 @@ npm install xcrud-tpl -g
 
 在项目根目录新建 `crud.json` 配置文件，可用配置如下：
 
-```json
+```javascript
 {
   // 数据库配置
   "db": {
@@ -69,21 +69,21 @@ npm install xcrud-tpl -g
 
 配置好文件后，使用命令 `xcrud` 启动服务
 
-![xcrud-tpl-1](./public/xcrud-tpl-1)
+![xcrud-tpl-1](https://raw.githubusercontent.com/GoldSubmarine/xcrud-tpl/master/public/xcrud-tpl-1.png)
 
 打开 `http://localhost:6688` 后，可以看到页面列出了所有的表
 
-![xcrud-tpl-2](./public/xcrud-tpl-2)
+![xcrud-tpl-2](https://raw.githubusercontent.com/GoldSubmarine/xcrud-tpl/master/public/xcrud-tpl-2.png)
 
 点击某张表的生成代码按钮，之前在 `xcrud.json` 中配置的下拉框和输入框都展示在弹窗中
 
-![xcrud-tpl-3](./public/xcrud-tpl-3)
+![xcrud-tpl-3](https://raw.githubusercontent.com/GoldSubmarine/xcrud-tpl/master/public/xcrud-tpl-3.png)
 
 输入相关的信息后，点击底部的 预览Model 按钮，可以看到一个json，json中的变量都可在 ejs模板 和 生成路径 中使用
 
-![xcrud-tpl-4](./public/xcrud-tpl-4)
+![xcrud-tpl-4](https://raw.githubusercontent.com/GoldSubmarine/xcrud-tpl/master/public/xcrud-tpl-4.png)
 
-点击确定，即可生成代码。（**注意：**要在配置的`./template/`文件夹中写好 ejs模板 哦）
+点击确定，即可生成代码。（ **注意：** 要在配置的`./template/`文件夹中写好 ejs模板 哦）
 
 ## 优点
 
