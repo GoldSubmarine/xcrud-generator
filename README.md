@@ -1,4 +1,4 @@
-# xcrud-tpl
+# xcrud-generator
 
 查询数据库表字段，快速生成模板代码，不区分项目语言，前后端都可使用
 
@@ -7,9 +7,9 @@
 ## 安装
 
 ```bash
-yarn global add xcrud-tpl
+yarn global add xcrud-generator
 # or
-npm install xcrud-tpl -g
+npm install xcrud-generator -g
 ```
 
 ## 使用
@@ -69,19 +69,19 @@ npm install xcrud-tpl -g
 
 配置好文件后，使用命令 `xcrud` 启动服务
 
-![xcrud-tpl-1](https://raw.githubusercontent.com/GoldSubmarine/xcrud-tpl/master/public/xcrud-tpl-1.png)
+![xcrud-generator-1](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-1.png)
 
 打开 `http://localhost:6688` 后，可以看到页面列出了所有的表
 
-![xcrud-tpl-2](https://raw.githubusercontent.com/GoldSubmarine/xcrud-tpl/master/public/xcrud-tpl-2.png)
+![xcrud-generator-2](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-2.png)
 
 点击某张表的生成代码按钮，之前在 `xcrud.json` 中配置的下拉框和输入框都展示在弹窗中
 
-![xcrud-tpl-3](https://raw.githubusercontent.com/GoldSubmarine/xcrud-tpl/master/public/xcrud-tpl-3.png)
+![xcrud-generator-3](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-3.png)
 
 输入相关的信息后，点击底部的 预览Model 按钮，可以看到一个json，json中的变量都可在 ejs模板 和 生成路径 中使用
 
-![xcrud-tpl-4](https://raw.githubusercontent.com/GoldSubmarine/xcrud-tpl/master/public/xcrud-tpl-4.png)
+![xcrud-generator-4](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-4.png)
 
 点击确定，即可生成代码。（ **注意：** 要在配置的`./template/`文件夹中写好 ejs模板 哦）
 
