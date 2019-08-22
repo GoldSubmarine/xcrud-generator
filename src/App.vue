@@ -12,34 +12,43 @@
 			</el-table-column>
     	</el-table>
 		<el-dialog title="生成代码" :visible.sync="dialogVisible" width="80%" @close="handleClose" :close-on-click-modal="false" :close-on-press-escape="false">
-			<el-table :data="fieldList" style="width: 100%" v-if="!isMonacoShow">
-				<el-table-column type="index"></el-table-column>
-				<el-table-column prop="field" label="字段名"></el-table-column>
-				<el-table-column prop="type" label="字段类型"></el-table-column>
-				<el-table-column prop="comment" label="备注">
-					<template slot-scope="scope">
-						<el-input v-model="scope.row.comment"></el-input>
-					</template>
-				</el-table-column>
-				<template v-for="(field,index) in config.fields">
-					<el-table-column :prop="field.name" :label="field.title" :key="index">
-						<template slot-scope="scope">
-							<el-select v-if="field.type == 'select'" v-model="scope.row[field.name]" placeholder="请选择">
-								<el-option
-									v-for="item in field.options"
-									:key="item.value"
-									:label="item.label"
-									:value="item.value">
-								</el-option>
-							</el-select>
-							<el-input v-if="field.type == 'input'" v-model="scope.row[field.name]"></el-input>
-						</template>
-					</el-table-column>
-				</template>
-			</el-table>
+            <div v-if="!isMonacoShow">
+                <el-row :gutter="20" v-if="this.config && this.config.mixin">
+                    <el-col :span="6" v-for="(value,key) in this.config.mixin" :key="key" style="margin-bottom: 14px;">
+                        <el-input v-model="config.mixin[key]"> -->
+                            <template slot="prepend">{{ key }}</template>
+                        </el-input>
+                    </el-col>
+                </el-row>
+                <el-table :data="fieldList" style="width: 100%">
+                    <el-table-column type="index"></el-table-column>
+                    <el-table-column prop="field" label="字段名"></el-table-column>
+                    <el-table-column prop="type" label="字段类型"></el-table-column>
+                    <el-table-column prop="comment" label="备注">
+                        <template slot-scope="scope">
+                            <el-input v-model="scope.row.comment"></el-input>
+                        </template>
+                    </el-table-column>
+                    <template v-for="(field,index) in config.fields">
+                        <el-table-column :prop="field.name" :label="field.title" :key="index">
+                            <template slot-scope="scope">
+                                <el-select v-if="field.type == 'select'" v-model="scope.row[field.name]" placeholder="请选择">
+                                    <el-option
+                                        v-for="item in field.options"
+                                        :key="item.value"
+                                        :label="item.label"
+                                        :value="item.value">
+                                    </el-option>
+                                </el-select>
+                                <el-input v-if="field.type == 'input'" v-model="scope.row[field.name]"></el-input>
+                            </template>
+                        </el-table-column>
+                    </template>
+                </el-table>
+            </div>
 			<div ref="monaco" class="monacoClass" v-show="isMonacoShow"></div>
 			<span slot="footer" class="dialog-footer">
-				<el-button @click="dialogVisible = false">取 消</el-button>
+				<!-- <el-button @click="dialogVisible = false">取 消</el-button> -->
 				<el-button @click="isMonacoShow = !isMonacoShow">{{ isMonacoShow ? '取消预览' : '预览Model' }}</el-button>
 				<el-button type="primary" @click="generate">确 定</el-button>
 			</span>
@@ -53,7 +62,7 @@ import * as monaco from 'monaco-editor';
 // import HelloWorld from "./components/HelloWorld.vue";
 
 
-axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '/' : 'http://localhost:6868';
+axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '/' : 'http://localhost:6688';
 export default {
 	name: "app",
 	// components: {

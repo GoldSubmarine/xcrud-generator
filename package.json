@@ -1,6 +1,6 @@
 {
   "name": "xcrud-generator",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "repository": "https://github.com/GoldSubmarine/xcrud-generator.git",
   "author": "charles <997462392@qq.com>",
   "license": "MIT",
@@ -48,7 +48,8 @@
     "dist",
     "README.md",
     "LICENSE",
-    "app.js"
+    "app.js",
+    "StrUtil.js"
   ],
   "bin": {
     "xcrud": "app.js"

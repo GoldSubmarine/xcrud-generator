@@ -18,52 +18,53 @@ npm install xcrud-generator -g
 
 ```javascript
 {
-  // 数据库配置
-  "db": {
-    "host": "192.168.1.100", // 主机ip
-    "user": "root", // 登录名
-    "password": "root", // 密码
-    "database": "xcrud-test-db" // 数据库名
-  },
-  // 直接混入的参数（可选）
-  "mixin": {
-    "package": "com.js" // 例如混入包名
-  },
-  // 自定义数据库字段的信息，自动生成到页面中
-  "fields": [
-    {
-      "title": "启用禁用", // 页面显示使用
-      "name": "enable", // 键值，在模板中使用
-      "default": "enable", // 默认值
-      "type": "select", // type支持两种：select（下拉选择）和input（输入框）
-      "options": [
-        // 设置下拉选项
-        { "label": "启用", "value": "enable" },
-        { "label": "冻结", "value": "disable" }
-      ]
+    // 数据库配置
+    "db": {
+        "host": "192.168.1.100", // 主机ip
+        "user": "root", // 登录名
+        "password": "root", // 密码
+        "database": "xcrud-test-db" // 数据库名
     },
-    {
-      "title": "地址",
-      "name": "address",
-      "default": "",
-      "type": "input" // 输入框
-    }
-  ],
-  // 模板文件夹，只支持ejs语法，模板文件要以ejs为后缀
-  "input": {
-    "dir": "./template/"
-  },
+    // 直接混入的参数（可选）
+    "mixin": {
+        "package": "org.xcrud", // 例如混入包名
+        "entity": ""
+    },
+    // 自定义数据库字段的信息，自动生成到页面中
+    "fields": [
+        {
+            "title": "启用禁用", // 页面显示使用
+            "name": "enable", // 键值，在模板中使用
+            "default": "enable", // 默认值
+            "type": "select", // type支持两种：select（下拉选择）和input（输入框）
+            "options": [
+                // 设置下拉选项
+                { "label": "启用", "value": "enable" },
+                { "label": "冻结", "value": "disable" }
+            ]
+        },
+        {
+            "title": "地址",
+            "name": "address",
+            "default": "",
+            "type": "input" // 输入框
+        }
+    ],
+    // 模板文件夹，只支持ejs语法，模板文件要以ejs为后缀
+    "input": {
+        "dir": "./template/"
+    },
   // 模板文件输出配置，指定每个模板文件的输出位置
-  "output": [
-    {
-      "template": "controller.ejs", // 模板文件名
-      "path": "./gen/<%= tableName %>/controller/Controller.java" // 当前模板的输出位置，路径支持ejs语法
-    },
-    {
-      "template": "dao.ejs",
-      "path": "./gen/<%= tableName %>/dao/dao.java"
-    }
-  ]
+    "output": [
+        {
+            "template": "controller.ejs", // 模板文件名
+            "path": "./gen/<%= tableName %>/controller/Controller.java" // 当前模板的输出位置，路径支持ejs语法
+        },
+        {
+            "template": "dao.ejs",
+            "path": "./gen/<%= tableName %>/dao/dao.java"
+        }
+    ]
 }
 ```
 
@@ -75,7 +76,7 @@ npm install xcrud-generator -g
 
 ![xcrud-generator-2](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-2.png)
 
-点击某张表的生成代码按钮，之前在 `xcrud.json` 中配置的下拉框和输入框都展示在弹窗中
+点击某张表的生成代码按钮，之前在 `xcrud.json` 中配置的下拉框（启用禁用）和输入框（地址）都展示在弹窗中
 
 ![xcrud-generator-3](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-3.png)
 
@@ -83,7 +84,29 @@ npm install xcrud-generator -g
 
 ![xcrud-generator-4](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-4.png)
 
-点击确定，即可生成代码。（ **注意：** 要在配置的`./template/`文件夹中写好 ejs模板 哦）
+点击确定，即可生成代码。（ **注意：** 要在 `xcrud.json` 中配置的`./template/`文件夹下写好 ejs模板 哦）
+
+## 内置函数
+
+内置字符串处理函数，可以在模板中使用
+
+- 下划线转驼峰：`StrUtil.underscoreToCamel(str)`
+- 驼峰转下划线：`StrUtil.camelToUnderscore(str)`
+- 首字母小写：`StrUtil.initialLowerCase(str)`
+- 首字母大写：`StrUtil.initialUpperCase(str)`
+- 全部小写：`StrUtil.toLowerCase(str)`
+- 全部大写：`StrUtil.toUpperCase(str)`
+
+```java
+// 使用示例，模板中可使用的变量 packageName = "xcrudGenerator"
+
+// file.ejs
+包名为：<%= StrUtil.camelToUnderscore(packageName) %>
+
+// 输出
+包名为：xcrud_generator
+
+```
 
 ## 命令行参数
 

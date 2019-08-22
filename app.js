@@ -10,6 +10,7 @@ const ejs = require('ejs');
 const mkdirp = require('mkdirp');
 const chalk = require('chalk');
 const commander = require('commander');
+const StrUtil = require('./StrUtil');
 
 let port;
 let configName;
@@ -112,9 +113,9 @@ app.get("/config", function(req, res) {
 
 //根据model生成文件
 app.post("/generate", function(req, res) {
-	let model = req.body;
-	render(model);
-	res.send("ok");
+    let model = req.body;
+    model.StrUtil = StrUtil;
+	render(model, () => res.send("ok"));
 });
 
 // 数据库建立连接，服务启动
@@ -139,7 +140,7 @@ db.connect(err => {
 
 
 // 渲染输出文件
-function render(model) {
+function render(model, callback) {
 	let templatePath = path.resolve(process.cwd(), config.input.dir);
 	glob(templatePath + "/**/*.ejs", (err, files) => {
 		if(err) console.log(err);
@@ -155,7 +156,8 @@ function render(model) {
 				fs.writeFileSync(outputPath, renderedStr);
 				console.log(chalk.greenBright("  The file is created successfully, path:", outputPath, "\n"))
 			};
-		})
+        })
+        callback();
 	})
 }
 
@@ -176,20 +178,14 @@ function findOutputPath(file, model) {
 // 下划线转换为驼峰，全部大写则转换为小写
 function strTransfer(str) {
 	if(!str || typeof str !== "string") return str;
-	//全部大写
-	if(!/[a-z]+/g.test(str)) {
-		str = str.toLowerCase();
-	}
+	//全部小写
+	str = StrUtil.toLowerCase(str);
 
 	//下划线转驼峰
-	str = str.replace(/\_(\w)/g, function(all, letter){
-        return letter.toUpperCase();
-	});
+	str = StrUtil.underscoreToCamel(str);
 	
 	// 首字母小写
-	str = str.replace(/^(\w)/g, function(all, letter){
-        return letter.toLowerCase();
-	});
+	str = StrUtil.initialLowerCase(str);
 
 	return str;
 }

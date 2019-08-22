@@ -1,12 +1,13 @@
 {
     "db": {
-        "host": "192.168.1.100",
+        "host": "192.168.39.36",
         "user": "root",
         "password": "root",
-        "database": "xcrud-test-db"
+        "database": "submarine"
     },
     "mixin": {
-        "package": "com.js"
+        "package": "org.xcrud",
+        "entity": ""
     },
     "fields": [
         {
