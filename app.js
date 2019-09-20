@@ -11,13 +11,14 @@ const mkdirp = require('mkdirp');
 const chalk = require('chalk');
 const commander = require('commander');
 const StrUtil = require('./StrUtil');
+const version = require('./package.json').version;
 
 let port;
 let configName;
 
 //============ 命令行开发start ============
-
-commander.version('0.1.0');
+console.log(version)
+commander.version(version);
 
 commander
   .option('-p, --port <number>', "set port", 6688)
