@@ -49,6 +49,7 @@ if(fs.existsSync(configPath)) {
 
 let db = mysql.createConnection({
 	host: config.db.host,
+	port: config.db.port,
 	user: config.db.user,
 	password: config.db.password,
 	database: config.db.database,
@@ -149,14 +150,15 @@ function render(model, callback) {
 			let renderedStr = ejs.render(str, model);
 			let outputPath = findOutputPath(file, model);
 			if(fs.existsSync(outputPath)) {
-				console.log(chalk.yellowBright("  The file is already exist, path:", outputPath, "\n"));
+				console.log(chalk.yellowBright.bold("  exist  "), outputPath + "\n");
 			} else if (outputPath) {
 				let pp = path.dirname(outputPath).split(path.sep).join('/');
 				mkdirp.sync(pp, err => console.error(err));
 				fs.writeFileSync(outputPath, renderedStr);
-				console.log(chalk.greenBright("  The file is created successfully, path:", outputPath, "\n"))
+				console.log(chalk.greenBright.bold("  created"), outputPath + "\n");
 			};
-        })
+		})
+		console.log("  ======================" + "\n")
         callback();
 	})
 }
