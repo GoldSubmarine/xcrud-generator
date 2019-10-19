@@ -17,12 +17,12 @@ let port;
 let configName;
 
 //============ 命令行开发start ============
-console.log(version)
+console.log("\nversion: " + version)
 commander.version(version);
 
 commander
   .option('-p, --port <number>', "set port", 6688)
-  .option('-c, --config <fileName>', "set profile name", "xcrud.json");
+  .option('-c, --config <fileName>', "set profile name", "xcrud.js");
 
 commander.parse(process.argv);
 
@@ -41,8 +41,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 let config;
 let configPath = path.resolve(`${process.cwd()}/${configName}`);
 if(fs.existsSync(configPath)) {
-	config = fs.readFileSync(configPath).toString();
-	config = JSON.parse(config);
+	config = require(configPath);
 } else {
 	console.log(chalkError, `can not find the file '${configName}' in current directory\n`);
 	process.exit();
@@ -115,9 +114,9 @@ app.get("/config", function(req, res) {
 
 //根据model生成文件
 app.post("/generate", function(req, res) {
-    let model = req.body;
+    let { model, config } = req.body;
     model.StrUtil = StrUtil;
-	render(model, () => res.send("ok"));
+	render(model, config, () => res.send("ok"));
 });
 
 // 数据库建立连接，服务启动
@@ -142,22 +141,25 @@ db.connect(err => {
 
 
 // 渲染输出文件
-function render(model, callback) {
+function render(model, config, callback) {
 	let templatePath = path.resolve(process.cwd(), config.input.dir);
+	let outputFileList = config.output.map(item => item.template)
 	glob(templatePath + "/**/*.ejs", (err, files) => {
 		if(err) console.log(err);
 		files.forEach(file => {
-			let str = fs.readFileSync(file).toString();
-			let renderedStr = ejs.render(str, model);
-			let outputPath = findOutputPath(file, model);
-			if(fs.existsSync(outputPath)) {
-				console.log(chalk.yellowBright.bold("  exist  "), outputPath + "\n");
-			} else if (outputPath) {
-				let pp = path.dirname(outputPath).split(path.sep).join('/');
-				mkdirp.sync(pp, err => console.error(err));
-				fs.writeFileSync(outputPath, renderedStr);
-				console.log(chalk.greenBright.bold("  created"), outputPath + "\n");
-			};
+			if( outputFileList.includes(path.basename(file)) ) {
+				let str = fs.readFileSync(file).toString();
+				let renderedStr = ejs.render(str, model);
+				let outputPath = findOutputPath(file, model);
+				if(fs.existsSync(outputPath)) {
+					console.log(chalk.yellowBright.bold("  exist  "), outputPath + "\n");
+				} else if (outputPath) {
+					let pp = path.dirname(outputPath).split(path.sep).join('/');
+					mkdirp.sync(pp, err => console.error(err));
+					fs.writeFileSync(outputPath, renderedStr);
+					console.log(chalk.greenBright.bold("  created"), outputPath + "\n");
+				};
+			}
 		})
 		console.log("  ======================" + "\n")
         callback();

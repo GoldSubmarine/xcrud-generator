@@ -11,8 +11,16 @@
 				</template>
 			</el-table-column>
     	</el-table>
-		<el-dialog title="生成代码" :visible.sync="dialogVisible" width="80%" @close="handleClose" :close-on-click-modal="false" :close-on-press-escape="false">
+		<!-- 🌱  -->
+		<el-dialog title="📣 生成代码" :visible.sync="dialogVisible" width="80%" @close="handleClose" :close-on-click-modal="false" :close-on-press-escape="false">
             <div v-if="!isMonacoShow">
+				<el-divider>🎉 生成模板 🎉</el-divider>
+                <el-row :gutter="20">
+					<el-checkbox-group v-model="checkFileList" style="padding: 0 10px" size="medium">
+						<el-checkbox :label="output.template" border v-for="(output, index) in config.output" :key="index">{{ output.template }}</el-checkbox>
+					</el-checkbox-group>
+				</el-row>
+				<el-divider>🚀 混入变量 🚀</el-divider>
                 <el-row :gutter="20" v-if="this.config && this.config.mixin">
                     <el-col :span="6" v-for="(value,key) in this.config.mixin" :key="key" style="margin-bottom: 14px;">
                         <el-input v-model="config.mixin[key]"> -->
@@ -20,6 +28,7 @@
                         </el-input>
                     </el-col>
                 </el-row>
+				<el-divider>✨ 数据库字段 ✨</el-divider>
                 <el-table :data="fieldList" style="width: 100%">
                     <el-table-column type="index"></el-table-column>
                     <el-table-column prop="field" label="字段名"></el-table-column>
@@ -48,7 +57,6 @@
             </div>
 			<div ref="monaco" class="monacoClass" v-show="isMonacoShow"></div>
 			<span slot="footer" class="dialog-footer">
-				<!-- <el-button @click="dialogVisible = false">取 消</el-button> -->
 				<el-button @click="isMonacoShow = !isMonacoShow">{{ isMonacoShow ? '取消预览' : '预览Model' }}</el-button>
 				<el-button type="primary" @click="generate">确 定</el-button>
 			</span>
@@ -59,18 +67,16 @@
 <script>
 import axios from "axios"
 import * as monaco from 'monaco-editor';
-// import HelloWorld from "./components/HelloWorld.vue";
 
 
 axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '/' : 'http://localhost:6688';
 export default {
 	name: "app",
-	// components: {
-	// 	HelloWorld
-	// },
 	data() {
 		return {
-			config: {},	// 用户的配置文件
+			rawConfig: {},	// 用户的配置文件
+			config: {},	// 用户修改后的配置文件
+			checkFileList: [],	// 用户的配置文件
 			tableNames: [],	// 表名
 			loading: false,
 			loadNum: 0,
@@ -89,7 +95,7 @@ export default {
 		getConfig() {
 			this.loadNum++;
 			axios.get('/config').then(res => {
-				this.config = res.data;
+				this.rawConfig = res.data;
 			}).catch(e => console.log(e)).finally(() => this.loadNum--);
 		},
 		getTableName() {
@@ -101,6 +107,9 @@ export default {
 		openDialog(index, row) {
 			this.dialogVisible = true;
 			this.loadNum++;
+
+			this.config = JSON.parse(JSON.stringify(this.rawConfig));
+			this.checkFileList = this.config.output.map(item => item.template)
 			this.tableName = row.name;
 			axios.get('/table/fields/info?name='+this.tableName).then(res => {
 				res.data.forEach(item => {
@@ -114,7 +123,17 @@ export default {
 		generate(index, row) {
 			this.loadNum++;
 			let model = this.getModel();
-			axios.post('generate', model).then(res => {
+			let config = JSON.parse(JSON.stringify(this.config))
+			config.output = this.checkFileList.map(item => {
+				let r;
+				this.rawConfig.output.forEach(raw => {
+					if(raw.template == item) {
+						r = raw
+					}
+				})
+				return r;
+			})
+			axios.post('generate', { config, model }).then(res => {
 				this.$message({ message: '生成成功', type: 'success' });
 				this.dialogVisible = false;
 			}).catch(e => console.log(e)).finally(() => this.loadNum--);
@@ -149,11 +168,6 @@ export default {
 			return str;
 		}
 	},
-	// computed: {
-	// 	tableData() {
-	// 		return this.tableNames;
-	// 	}
-	// },
 	watch: {
 		loadNum(newVal, oldVal) {
 			if(newVal === 0) {
