@@ -22,7 +22,7 @@ commander.version(version);
 
 commander
   .option('-p, --port <number>', "set port", 6688)
-  .option('-c, --config <fileName>', "set profile name", "xcrud.js");
+  .option('-c, --config <fileName>', "set profile name", "xcrud-generator.js");
 
 commander.parse(process.argv);
 
