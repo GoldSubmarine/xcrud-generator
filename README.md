@@ -129,3 +129,9 @@ Options:
 - 无侵入，只需在项目中添加 json 配置文件，写好模板即可
 - 自定义参数，根据自身需求，在页面中混入参数
 - 动态路径，生成的文件路径可动态生成，支持 ejs 语法
+
+## License
+
+[MIT](http://opensource.org/licenses/MIT)
+
+Copyright (c) 2019-present, vinsoncho
