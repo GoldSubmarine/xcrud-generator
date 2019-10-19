@@ -14,6 +14,7 @@ yarn.lock
 npm.lock
 
 # Editor directories and files
+dist
 .idea
 .vscode
 *.suo
