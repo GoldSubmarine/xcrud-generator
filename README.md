@@ -14,7 +14,7 @@ npm install xcrud-generator -g
 
 ## 使用
 
-在项目根目录新建 `crud.json` 配置文件，可用配置如下：
+在项目根目录新建 `xcrud-generator.js` 配置文件，可用配置如下：
 
 ```javascript
 module.exports = {
@@ -76,7 +76,7 @@ module.exports = {
 
 ![xcrud-generator-2](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-2.png)
 
-点击某张表的生成代码按钮，之前在 `xcrud.json` 中配置的下拉框（启用禁用）和输入框（地址）都展示在弹窗中
+点击某张表的生成代码按钮，之前在 `xcrud-generator.js` 中配置的下拉框（启用禁用）和输入框（地址）都展示在弹窗中，并且可勾选要生成的文件，以及填写要混入的变量
 
 ![xcrud-generator-3](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-3.png)
 
@@ -84,7 +84,7 @@ module.exports = {
 
 ![xcrud-generator-4](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-4.png)
 
-点击确定，即可生成代码。（ **注意：** 要在 `xcrud.json` 中配置的`./template/`文件夹下写好 ejs模板 哦）
+点击确定，即可生成代码。（ **注意：** 要在 `xcrud-generator.js` 中配置的`./template/`文件夹下写好 ejs模板 哦）
 
 ## 内置函数
 
@@ -120,7 +120,7 @@ Usage: app [options]
 Options:
   -V, --version            output the version number
   -p, --port <number>      set port (default: 6688)
-  -c, --config <fileName>  set profile name (default: "xcrud.json")
+  -c, --config <fileName>  set profile name (default: "xcrud-generator.js")
   -h, --help               output usage information
 ```
 
