@@ -134,4 +134,4 @@ Options:
 
 [MIT](http://opensource.org/licenses/MIT)
 
-Copyright (c) 2019-present, vinsoncho
+Copyright (c) 2019-present, charles
