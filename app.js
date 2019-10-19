@@ -79,11 +79,17 @@ app.get("/table/list", function(req, res) {
     if (error) throw error;
     let arr = [];
     results.forEach(table => {
-	  arr.push({
-		  name: table.Name,
-		  comment: table.Comment,
-		  createTime: table.Create_time
-	  });
+			let createTime = ''
+			if(table.Create_time) {
+				createTime = table.Create_time.toISOString().replace(/\..+$/, '')
+				createTime = createTime.replace(/T/, ' ')
+			}
+			arr.push({
+				name: table.Name,
+				collation: table.Collation,
+				comment: table.Comment,
+				createTime: createTime
+			});
     });
     res.send(arr);
   });

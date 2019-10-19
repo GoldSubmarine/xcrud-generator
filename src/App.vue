@@ -1,13 +1,20 @@
 <template>
-	<div id="app" v-loading="loading">
-		<el-table :data="tableNames" style="width: 100%">
-			<el-table-column type="index"></el-table-column>
-			<el-table-column prop="name" label="表名"></el-table-column>
-			<el-table-column prop="createTime" label="创建时间"></el-table-column>
-			<el-table-column prop="comment" label="备注"></el-table-column>
-			<el-table-column label="操作">
+	<div id="app" v-loading="loading" style="width: 1000px;margin: auto;">
+		<h1 style="font-size: 26px;">xcrud 代码生成器</h1>
+		<div style="margin: 20px 0">
+			<el-input placeholder="请输入内容" v-model="searchTableName">
+				<template slot="prepend">通过表名搜索</template>
+			</el-input>
+		</div>
+		<el-table border :data="computedTableNames" style="width: 100%">
+			<el-table-column type="index" align="center"></el-table-column>
+			<el-table-column prop="name" label="表名" align="center" show-overflow-tooltip></el-table-column>
+			<el-table-column prop="collation" label="字符编码集" align="center" show-overflow-tooltip></el-table-column>
+			<el-table-column prop="createTime" label="创建时间" align="center" show-overflow-tooltip></el-table-column>
+			<el-table-column prop="comment" label="备注" align="center" show-overflow-tooltip></el-table-column>
+			<el-table-column label="操作" align="center" width='140px'>
 				<template slot-scope="scope">
-					<el-button  type="success" @click="openDialog(scope.$index, scope.row)">生成代码</el-button>
+					<el-button  type="success" plain @click="openDialog(scope.$index, scope.row)">生成代码</el-button>
 				</template>
 			</el-table-column>
     	</el-table>
@@ -29,17 +36,17 @@
                     </el-col>
                 </el-row>
 				<el-divider>✨ 数据库字段 ✨</el-divider>
-                <el-table :data="fieldList" style="width: 100%">
-                    <el-table-column type="index"></el-table-column>
-                    <el-table-column prop="field" label="字段名"></el-table-column>
-                    <el-table-column prop="type" label="字段类型"></el-table-column>
-                    <el-table-column prop="comment" label="备注">
+                <el-table border :data="fieldList" style="width: 100%">
+                    <el-table-column type="index" align="center"></el-table-column>
+                    <el-table-column prop="field" label="字段名" align="center"></el-table-column>
+                    <el-table-column prop="type" label="字段类型" align="center"></el-table-column>
+                    <el-table-column prop="comment" label="备注" align="center">
                         <template slot-scope="scope">
                             <el-input v-model="scope.row.comment"></el-input>
                         </template>
                     </el-table-column>
                     <template v-for="(field,index) in config.fields">
-                        <el-table-column :prop="field.name" :label="field.title" :key="index">
+                        <el-table-column :prop="field.name" :label="field.title" :key="index" align="center">
                             <template slot-scope="scope">
                                 <el-select v-if="field.type == 'select'" v-model="scope.row[field.name]" placeholder="请选择">
                                     <el-option
@@ -66,10 +73,21 @@
 
 <script>
 import axios from "axios"
+import { Message } from 'element-ui';
 import * as monaco from 'monaco-editor';
 
-
 axios.defaults.baseURL = process.env.NODE_ENV === 'production' ? '/' : 'http://localhost:6688';
+axios.interceptors.response.use(function (response) {
+	// Any status code that lie within the range of 2xx cause this function to trigger
+	// Do something with response data
+	return response;
+}, function (error) {
+	// Any status codes that falls outside the range of 2xx cause this function to trigger
+	// Do something with response error
+	Message.info("服务器错误")
+	return Promise.reject(error);
+});
+
 export default {
 	name: "app",
 	data() {
@@ -78,6 +96,7 @@ export default {
 			config: {},	// 用户修改后的配置文件
 			checkFileList: [],	// 用户的配置文件
 			tableNames: [],	// 表名
+			searchTableName: '',	// 用户搜索的表名
 			loading: false,
 			loadNum: 0,
 			tableName: '',
@@ -166,6 +185,13 @@ export default {
 				return letter.toLowerCase();
 			});
 			return str;
+		}
+	},
+	computed: {
+		computedTableNames() {
+			return this.tableNames.filter(item => {
+				return item.name.indexOf(this.searchTableName) !== -1;
+			})
 		}
 	},
 	watch: {

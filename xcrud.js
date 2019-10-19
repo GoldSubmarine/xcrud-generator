@@ -1,9 +1,9 @@
 module.exports = {
     // 数据库配置
     db: {
-        host: "192.168.39.36",
+        host: "127.0.0.1",
         user: "root",
-        password: "root",
+        password: "",
         database: "submarine"  // 数据库名
     },
     // 直接混入的参数（可选）
