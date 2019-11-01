@@ -20,10 +20,10 @@ npm install xcrud-generator -g
 module.exports = {
     // 数据库配置
     db: {
-        host: "192.168.39.36",
-        user: "root",
-        password: "root",
-        database: "submarine"  // 数据库名
+        host: '192.168.39.36',
+        user: 'root',
+        password: 'root',
+        database: 'submarine'  // 数据库名
     },
     // 直接混入的参数（可选）
     mixin: {
@@ -36,6 +36,7 @@ module.exports = {
             title: "是否非空",
             name: "isSearch",
             default: false,
+            width: "100",   // 宽度
             type: "checkbox"  // checkbox
         },
         {
@@ -53,7 +54,9 @@ module.exports = {
             title: "地址",
             name: "address",
             default: "",
-            type: "input" // 输入框
+            type: "input", // 输入框
+            width: "300",
+            placeholder: "请输入地址"   // placeholder
         }
     ],
     // 模板文件夹，只支持ejs语法，模板文件要以ejs为后缀

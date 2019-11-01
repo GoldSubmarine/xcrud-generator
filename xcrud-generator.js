@@ -17,6 +17,7 @@ module.exports = {
             title: "是否非空",
             name: "isSearch",
             default: false,
+            width: "100",   // 宽度
             type: "checkbox"  // checkbox
         },
         {
@@ -34,7 +35,9 @@ module.exports = {
             title: "地址",
             name: "address",
             default: "",
-            type: "input" // 输入框
+            type: "input", // 输入框
+            width: "300",
+            placeholder: "请输入地址"   // placeholder
         }
     ],
     // 模板文件夹，只支持ejs语法，模板文件要以ejs为后缀

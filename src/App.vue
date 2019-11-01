@@ -46,9 +46,9 @@
                         </template>
                     </el-table-column>
                     <template v-for="(field,index) in config.fields">
-                        <el-table-column :prop="field.name" :label="field.title" :key="index" align="center">
+                        <el-table-column :prop="field.name" :label="field.title" :key="index" align="center" :width="field.width">
                             <template slot-scope="scope">
-                                <el-select v-if="field.type == 'select'" v-model="scope.row[field.name]" placeholder="请选择">
+                                <el-select v-if="field.type == 'select'" v-model="scope.row[field.name]" :placeholder="field.placeholder">
                                     <el-option
                                         v-for="item in field.options"
                                         :key="item.value"
@@ -56,7 +56,7 @@
                                         :value="item.value">
                                     </el-option>
                                 </el-select>
-                                <el-input v-if="field.type == 'input'" v-model="scope.row[field.name]"></el-input>
+                                <el-input v-if="field.type == 'input'" v-model="scope.row[field.name]" :placeholder="field.placeholder"></el-input>
 								<el-checkbox v-if="field.type == 'checkbox'" v-model="scope.row[field.name]"></el-checkbox>
                             </template>
                         </el-table-column>
