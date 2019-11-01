@@ -57,6 +57,7 @@
                                     </el-option>
                                 </el-select>
                                 <el-input v-if="field.type == 'input'" v-model="scope.row[field.name]"></el-input>
+								<el-checkbox v-if="field.type == 'checkbox'" v-model="scope.row[field.name]"></el-checkbox>
                             </template>
                         </el-table-column>
                     </template>

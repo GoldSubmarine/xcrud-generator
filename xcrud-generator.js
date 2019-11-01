@@ -1,10 +1,10 @@
 module.exports = {
     // 数据库配置
     db: {
-        host: "127.0.0.1",
-        user: "root",
-        password: "",
-        database: "submarine"  // 数据库名
+        host: '192.168.39.36',
+        user: 'root',
+        password: 'root',
+        database: 'submarine'  // 数据库名
     },
     // 直接混入的参数（可选）
     mixin: {
@@ -13,6 +13,12 @@ module.exports = {
     },
     // 自定义数据库字段的信息，自动生成到页面中（可选）
     fields: [
+        {
+            title: "是否非空",
+            name: "isSearch",
+            default: false,
+            type: "checkbox"  // checkbox
+        },
         {
             title: "启用禁用",
             name: "enable",

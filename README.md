@@ -33,6 +33,12 @@ module.exports = {
     // 自定义数据库字段的信息，自动生成到页面中（可选）
     fields: [
         {
+            title: "是否非空",
+            name: "isSearch",
+            default: false,
+            type: "checkbox"  // checkbox
+        },
+        {
             title: "启用禁用",
             name: "enable",
             default: "",  // 默认值
@@ -70,19 +76,19 @@ module.exports = {
 
 配置好文件后，使用命令 `xcrud` 启动服务
 
-![xcrud-generator-1](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-1.png)
+![xcrud-generator-1](./docs/images/xcrud-generator-1.png)
 
 打开 `http://localhost:6688` 后，可以看到页面列出了所有的表
 
-![xcrud-generator-2](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-2.png)
+![xcrud-generator-2](./docs/images/xcrud-generator-2.png)
 
 点击某张表的生成代码按钮，之前在 `xcrud-generator.js` 中配置的下拉框（启用禁用）和输入框（地址）都展示在弹窗中，并且可勾选要生成的文件，以及填写要混入的变量
 
-![xcrud-generator-3](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-3.png)
+![xcrud-generator-3](./docs/images/xcrud-generator-3.png)
 
 输入相关的信息后，点击底部的 预览Model 按钮，可以看到一个json，json中的变量都可在 ejs模板 和 生成路径 中使用
 
-![xcrud-generator-4](https://raw.githubusercontent.com/GoldSubmarine/xcrud-generator/master/public/xcrud-generator-4.png)
+![xcrud-generator-4](./docs/images/xcrud-generator-4.png)
 
 点击确定，即可生成代码。（ **注意：** 要在 `xcrud-generator.js` 中配置的`./template/`文件夹下写好 ejs模板 哦）
 
