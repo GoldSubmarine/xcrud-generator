@@ -19,56 +19,58 @@
 			</el-table-column>
     	</el-table>
 		<!-- 🌱  -->
-		<el-dialog title="📣 生成代码" :visible.sync="dialogVisible" width="80%" @close="handleClose" :close-on-click-modal="false" :close-on-press-escape="false">
-            <div v-if="!isMonacoShow">
-				<el-divider>🎉 生成模板 🎉</el-divider>
-                <el-row :gutter="20">
-					<el-checkbox-group v-model="checkFileList" style="padding: 0 10px" size="medium">
-						<el-checkbox :label="output.template" border v-for="(output, index) in config.output" :key="index">{{ output.template }}</el-checkbox>
-					</el-checkbox-group>
-				</el-row>
-				<el-divider>🚀 混入变量 🚀</el-divider>
-                <el-row :gutter="20" v-if="this.config && this.config.mixin">
-                    <el-col :span="6" v-for="(value,key) in this.config.mixin" :key="key" style="margin-bottom: 14px;">
-                        <el-input v-model="config.mixin[key]"> -->
-                            <template slot="prepend">{{ key }}</template>
-                        </el-input>
-                    </el-col>
-                </el-row>
-				<el-divider>✨ 数据库字段 ✨</el-divider>
-                <el-table border :data="fieldList" style="width: 100%">
-                    <el-table-column type="index" align="center"></el-table-column>
-                    <el-table-column prop="field" label="字段名" align="center"></el-table-column>
-                    <el-table-column prop="type" label="字段类型" align="center"></el-table-column>
-                    <el-table-column prop="comment" label="备注" align="center">
-                        <template slot-scope="scope">
-                            <el-input v-model="scope.row.comment"></el-input>
-                        </template>
-                    </el-table-column>
-                    <template v-for="(field,index) in config.fields">
-                        <el-table-column :prop="field.name" :label="field.title" :key="index" align="center" :width="field.width">
-                            <template slot-scope="scope">
-                                <el-select v-if="field.type == 'select'" v-model="scope.row[field.name]" :placeholder="field.placeholder">
-                                    <el-option
-                                        v-for="item in field.options"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value">
-                                    </el-option>
-                                </el-select>
-                                <el-input v-if="field.type == 'input'" v-model="scope.row[field.name]" :placeholder="field.placeholder"></el-input>
-								<el-checkbox v-if="field.type == 'checkbox'" v-model="scope.row[field.name]"></el-checkbox>
-                            </template>
-                        </el-table-column>
-                    </template>
-                </el-table>
-            </div>
-			<div ref="monaco" class="monacoClass" v-show="isMonacoShow"></div>
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="isMonacoShow = !isMonacoShow">{{ isMonacoShow ? '取消预览' : '预览Model' }}</el-button>
-				<el-button type="primary" @click="generate">确 定</el-button>
-			</span>
-		</el-dialog>
+		<el-drawer title="📣 生成代码" :visible.sync="dialogVisible" size="100%" direction="ttb" @close="handleClose" :wrapperClosable="false" :close-on-press-escape="false">
+			<div style="height: calc(100vh - 77px);overflow-y: scroll;overflow: hidden auto;">
+				<div v-show="!isMonacoShow">
+					<el-divider>🎉 生成模板 🎉</el-divider>
+					<el-row :gutter="20">
+						<el-checkbox-group v-model="checkFileList" style="padding: 0 10px" size="medium">
+							<el-checkbox :label="output.template" border v-for="(output, index) in config.output" :key="index">{{ output.template }}</el-checkbox>
+						</el-checkbox-group>
+					</el-row>
+					<el-divider>🚀 混入变量 🚀</el-divider>
+					<el-row :gutter="20" v-if="this.config && this.config.mixin">
+						<el-col :span="6" v-for="(value,key) in this.config.mixin" :key="key" style="margin-bottom: 14px;">
+							<el-input v-model="config.mixin[key]"> -->
+								<template slot="prepend">{{ key }}</template>
+							</el-input>
+						</el-col>
+					</el-row>
+					<el-divider>✨ 数据库字段 ✨</el-divider>
+					<el-table border :data="fieldList" style="width: 100%">
+						<el-table-column type="index" align="center"></el-table-column>
+						<el-table-column prop="field" label="字段名" align="center"></el-table-column>
+						<el-table-column prop="type" label="字段类型" align="center"></el-table-column>
+						<el-table-column prop="comment" label="备注" align="center">
+							<template slot-scope="scope">
+								<el-input v-model="scope.row.comment"></el-input>
+							</template>
+						</el-table-column>
+						<template v-for="(field,index) in config.fields">
+							<el-table-column :prop="field.name" :label="field.title" :key="index" align="center" :width="field.width">
+								<template slot-scope="scope">
+									<el-select v-if="field.type == 'select'" v-model="scope.row[field.name]" :placeholder="field.placeholder">
+										<el-option
+											v-for="(item,optionIndex) in field.options"
+											:key="optionIndex"
+											:label="item.label"
+											:value="item.value">
+										</el-option>
+									</el-select>
+									<el-input v-else-if="field.type == 'input'" v-model="scope.row[field.name]" :placeholder="field.placeholder"></el-input>
+									<el-checkbox v-else-if="field.type == 'checkbox'" v-model="scope.row[field.name]"></el-checkbox>
+								</template>
+							</el-table-column>
+						</template>
+					</el-table>
+				</div>
+				<div ref="monaco" class="monacoClass" v-show="isMonacoShow"></div>
+				<div style="text-align: end;margin: 20px 40px;">
+					<el-button @click="isMonacoShow = !isMonacoShow">{{ isMonacoShow ? '取消预览' : '预览Model' }}</el-button>
+					<el-button type="primary" @click="generate">确 定</el-button>
+				</div>
+			</div>
+		</el-drawer>
 	</div>
 </template>
 
@@ -98,8 +100,7 @@ export default {
 			checkFileList: [],	// 用户的配置文件
 			tableNames: [],	// 表名
 			searchTableName: '',	// 用户搜索的表名
-			loading: false,
-			loadNum: 0,
+			loading: 0,
 			tableName: '',
 			dialogVisible: false,
 			isMonacoShow: false,
@@ -113,21 +114,19 @@ export default {
 	},
 	methods: {
 		getConfig() {
-			this.loadNum++;
+			this.loading++;
 			axios.get('/config').then(res => {
 				this.rawConfig = res.data;
-			}).catch(e => console.log(e)).finally(() => this.loadNum--);
+			}).catch(e => console.log(e)).finally(() => this.loading--);
 		},
 		getTableName() {
-			this.loadNum++;
+			this.loading++;
 			axios.get('/table/list').then(res => {
 				this.tableNames = res.data;
-			}).catch(e => console.log(e)).finally(() => this.loadNum--);
+			}).catch(e => console.log(e)).finally(() => this.loading--);
 		},
 		openDialog(index, row) {
-			this.dialogVisible = true;
-			this.loadNum++;
-
+			this.loading++;
 			this.config = JSON.parse(JSON.stringify(this.rawConfig));
 			this.checkFileList = this.config.output.map(item => item.template)
 			this.tableName = row.name;
@@ -138,10 +137,11 @@ export default {
 					}
 				})
 				this.fieldList = res.data;
-			}).catch(e => console.log(e)).finally(() => this.loadNum--);
+				this.dialogVisible = true;
+			}).catch(e => console.log(e)).finally(() => this.loading--);
 		},
 		generate(index, row) {
-			this.loadNum++;
+			this.loading++;
 			let model = this.getModel();
 			let config = JSON.parse(JSON.stringify(this.config))
 			config.output = this.checkFileList.map(item => {
@@ -156,7 +156,7 @@ export default {
 			axios.post('generate', { config, model }).then(res => {
 				this.$message({ message: '生成成功', type: 'success' });
 				this.dialogVisible = false;
-			}).catch(e => console.log(e)).finally(() => this.loadNum--);
+			}).catch(e => console.log(e)).finally(() => this.loading--);
 		},
 		getModel() {
 			let model = Object.assign({}, this.config.mixin);
@@ -196,13 +196,6 @@ export default {
 		}
 	},
 	watch: {
-		loadNum(newVal, oldVal) {
-			if(newVal === 0) {
-				this.loading = false;
-			} else {
-				this.loading = true;
-			}
-		},
 		isMonacoShow(newVal, oldVal) {
 			if(newVal) {
 				let model = this.getModel();
