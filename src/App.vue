@@ -30,7 +30,7 @@
 					</el-row>
 					<el-divider>🚀 混入变量 🚀</el-divider>
 					<el-row :gutter="20" v-if="this.config && this.config.mixin">
-						<el-col :span="6" v-for="(value,key) in this.config.mixin" :key="key" style="margin-bottom: 14px;">
+						<el-col :span="3" v-for="(value,key) in this.config.mixin" :key="key" style="margin-bottom: 14px;">
 							<el-input v-model="config.mixin[key]"> -->
 								<template slot="prepend">{{ key }}</template>
 							</el-input>
