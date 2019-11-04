@@ -73,16 +73,16 @@ module.exports = {
             default: "",
             type: "select",
             options: [
-                { label: "=", value: "radio" },
-                { label: "!=", value: "radio" },
-                { label: ">", value: "radio" },
-                { label: ">=", value: "radio" },
-                { label: "<", value: "radio" },
-                { label: "<=", value: "radio" },
-                { label: "Between", value: "radio" },
-                { label: "Like", value: "radio" },
-                { label: "Left Like", value: "radio" },
-                { label: "Right Like", value: "radio" }
+                { label: '=', value: '=' },
+                { label: '!=', value: '!=' },
+                { label: '>', value: '>' },
+                { label: '>=', value: '>=' },
+                { label: '<', value: '<' },
+                { label: '<=', value: '<=' },
+                { label: 'Between', value: 'Between' },
+                { label: 'Like', value: 'Like' },
+                { label: 'Left Like', value: 'Left Like' },
+                { label: 'Right Like', value: 'Right Like' }
             ]
         },
         {

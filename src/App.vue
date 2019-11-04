@@ -20,7 +20,7 @@
     	</el-table>
 		<!-- 🌱  -->
 		<el-drawer title="📣 生成代码" :visible.sync="dialogVisible" size="100%" direction="ttb" @close="handleClose" :wrapperClosable="false" :close-on-press-escape="false">
-			<div style="height: calc(100vh - 77px);overflow-y: scroll;overflow: hidden auto;">
+			<div style="height: calc(100vh - 77px);">
 				<div v-show="!isMonacoShow">
 					<el-divider>🎉 生成模板 🎉</el-divider>
 					<el-row :gutter="20">
@@ -37,7 +37,7 @@
 						</el-col>
 					</el-row>
 					<el-divider>✨ 数据库字段 ✨</el-divider>
-					<el-table border :data="fieldList" style="width: 100%">
+					<el-table height="calc(100vh - 400px)" border :data="fieldList" style="width: 100%">
 						<el-table-column type="index" align="center"></el-table-column>
 						<el-table-column prop="field" label="字段名" align="center"></el-table-column>
 						<el-table-column prop="type" label="字段类型" align="center"></el-table-column>
