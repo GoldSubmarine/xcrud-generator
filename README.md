@@ -21,13 +21,14 @@ module.exports = {
     // 数据库配置
     db: {
         host: '192.168.39.36',
+        port: 3306,
         user: 'root',
         password: 'root',
-        database: 'submarine'  // 数据库名
+        database: 'submarine'
     },
     // 直接混入的参数（可选）
     mixin: {
-        package: "org.xcrud",  // 例如混入包名
+        package: "org.xcrud",
         entity: ""
     },
     // 自定义数据库字段的信息，自动生成到页面中（可选）
@@ -36,14 +37,14 @@ module.exports = {
             title: "是否非空",
             name: "isSearch",
             default: false,
-            width: "100",   // 宽度
+            width: "100",
             type: "checkbox"  // checkbox
         },
         {
             title: "启用禁用",
             name: "enable",
-            default: "",  // 默认值
-            type: "select", // type支持两种：select（下拉选择）和input（输入框）
+            default: "",
+            type: "select", // 下拉选择
             options: [
                 // 设置下拉选项
                 { label: "启用", value: "enable" },
@@ -56,7 +57,7 @@ module.exports = {
             default: "",
             type: "input", // 输入框
             width: "300",
-            placeholder: "请输入地址"   // placeholder
+            placeholder: "请输入地址"
         }
     ],
     // 模板文件夹，只支持ejs语法，模板文件要以ejs为后缀
@@ -86,6 +87,10 @@ module.exports = {
 ![xcrud-generator-2](./docs/images/xcrud-generator-2.png)
 
 点击某张表的生成代码按钮，之前在 `xcrud-generator.js` 中配置的下拉框（启用禁用）和输入框（地址）都展示在弹窗中，并且可勾选要生成的文件，以及填写要混入的变量
+
+![xcrud-generator-3](./docs/images/xcrud-generator-3.png)
+
+对于比较复杂的配置很容易配置出错，通过点击底部的载入历史按钮，可以快速的载入上次的配置，在此基础上继续修改
 
 ![xcrud-generator-3](./docs/images/xcrud-generator-3.png)
 

@@ -1,0 +1,159 @@
+<template>
+  <div class="app-container">
+    <el-dialog v-loading="loading" :title="dialogTitle" :visible.sync="dialogVisible" width="520px" :close-on-click-modal="false" @closed="$emit('close')">
+      <x-form ref="xForm" v-model="formData" :config="formConfig" />
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+<%
+  var baseField = ['id', 'createBy', 'createTime', 'updateBy', 'updateTime', 'delFlag']
+
+  function transformJson(columnItem) {
+    if(!baseField.includes(columnItem.field) && columnItem.isFormShow) {
+      let item = {}
+      let tag = columnItem.formType.split(',')
+      item.xType = tag[0]
+      if(tag.length === 2) {
+        item.type = tag[1]
+      }
+      item.name = columnItem.field
+      item.label = columnItem.comment
+      item.rules = []
+      if(columnItem.isNotNull) {
+        item.rules.push("'inputRequired'")
+      }
+      if(columnItem.verifyType) {
+        item.rules.push(`'${columnItem.verifyType}'`)
+      }
+      if(item.rules.length) {
+        item.rules.join(" ,")
+        item.rules = `importRules(${item.rules})`
+      } else {
+        delete item.rules
+      }
+      if(columnItem.strLenRange) {
+        let limit = columnItem.strLenRange.split(',')
+        if(item.rules) {
+          item.rules += `.concat(limitStrRule(${limit[0]}, ${limit[1]}))`
+        } else {
+          item.rules += `limitStrRule(${limit[0]}, ${limit[1]})`
+        }
+      }
+      if(columnItem.numRange) {
+        let limit = columnItem.numRange.split(',')
+        if(item.rules) {
+          item.rules += `.concat(limitNumRule(${limit[0]}, ${limit[1]}))`
+        } else {
+          item.rules += `limitNumRule(${limit[0]}, ${limit[1]})`
+        }
+      }
+      return item
+    }
+    return null
+  }
+
+  function genJsonStr(fields) {
+    let result = []
+    fields.forEach(columnItem => {
+      let item = transformJson(columnItem)
+      if(item) {
+        let str = "{"
+        for(key in item) {
+          if(key === 'rules') {
+            str += ` ${key}: ${item[key]},`
+          } else {
+            str += ` ${key}: \'${item[key]}\',`
+          }
+        }
+        str += " }"
+        result.push(str)
+      }
+    })
+    return result.join(",\n\t\t\t\t\t")
+  }
+
+-%>
+import { get<%= Entity %>Detail, save<%= Entity %> } from '@/api/<%= entity %>'
+import { importDic, importRules, limitStrRule, limitNumRule } from '@/utils/index'
+export default {
+  props: {
+    mode: { // edit, detail, add
+      type: String,
+      required: true
+    },
+    id: {
+      type: String,
+      default: null
+    }
+  },
+  data() {
+    return {
+      loading: 0,
+      dialogVisible: true,
+      formData: {},
+      formDisabled: false,
+      dialogTitle: '编辑',
+      showBtn: true
+    }
+  },
+  computed: {
+    formConfig() {
+      const _this = this
+      return {
+        disabled: _this.formDisabled,
+        inline: false,
+        item: [
+          <%- genJsonStr(fields) %>
+        ],
+        operate: [
+          { text: '保存', show: _this.showBtn, click: _this.save<%= Entity %> },
+          { text: '取消', show: _this.showBtn, click: () => { _this.dialogVisible = false } },
+        ]
+      }
+    },
+  },
+  methods: {
+    get<%= Entity %>Detail() {
+      this.loading++
+      get<%= Entity %>Detail(this.id).then(res => {
+        this.formData = res
+      }).catch(e => console.error(e)).finally(() => this.loading--)
+    },
+    save<%= Entity %>() {
+      this.$refs['xForm'].validate().then(() => {
+        this.loading++
+        save<%= Entity %>(this.formData).then(res => {
+          this.dialogVisible = false
+          this.$emit('refresh')
+        }).catch(e => console.error(e)).finally(() => this.loading--)
+      }).catch(e => console.error(e))
+    },
+  },
+  watch: {
+    mode: {
+      handler: function(mode) {
+        if (this.mode === 'add') {
+          this.dialogTitle = '新建'
+        }
+        if (this.mode === 'edit') {
+          this.dialogTitle = '编辑'
+          this.get<%= Entity %>Detail()
+        }
+        if (this.mode === 'detail') {
+          this.dialogTitle = '详情'
+          this.get<%= Entity %>Detail()
+          this.formDisabled = true
+          this.showBtn = false
+        }
+      },
+      immediate: true
+    }
+  }
+}
+</script>
+
+<style scoped>
+
+</style>
