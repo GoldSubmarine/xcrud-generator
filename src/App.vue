@@ -65,7 +65,21 @@
 					</el-table>
 				</div>
 				<div ref="monaco" class="monacoClass" v-show="isMonacoShow"></div>
+				<el-drawer title="历史记录" :append-to-body="true" :visible.sync="historyDrawer" size="700px">
+					<el-table :data="historyList" stripe :default-sort = "{prop: 'createTime', order: 'descending'}">
+						<el-table-column prop="dbName" label="数据库" align="center" show-overflow-tooltip></el-table-column>
+						<el-table-column prop="tableName" label="表名" align="center" show-overflow-tooltip></el-table-column>
+						<el-table-column prop="createTime" label="日期" align="center" show-overflow-tooltip></el-table-column>
+						<el-table-column label="操作" align="center">
+							<template slot-scope="scope">
+								<el-button size="mini" type="success" plain @click="loadFromHistory(scope.row.rawKey)">载入</el-button>
+								<el-button size="mini" type="danger" plain @click="deleteHistory(scope.row.rawKey)">删除</el-button>
+							</template>
+						</el-table-column>
+					</el-table>
+				</el-drawer>
 				<div style="text-align: end;margin: 20px 40px;">
+					<el-button @click="showHistory" v-if="!isMonacoShow">载入历史</el-button>
 					<el-button @click="isMonacoShow = !isMonacoShow">{{ isMonacoShow ? '取消预览' : '预览Model' }}</el-button>
 					<el-button type="primary" @click="generate">确 定</el-button>
 				</div>
@@ -95,6 +109,7 @@ export default {
 	name: "app",
 	data() {
 		return {
+			projectName: "xcrud-generator",
 			rawConfig: {},	// 用户的配置文件
 			config: {},	// 用户修改后的配置文件
 			checkFileList: [],	// 用户的配置文件
@@ -106,6 +121,8 @@ export default {
 			isMonacoShow: false,
 			fieldList: [],	// 某张表的字段列表
 			editor: "",
+			historyList: [],
+			historyDrawer: false,
 		}
 	},
 	mounted() {
@@ -140,6 +157,30 @@ export default {
 				this.dialogVisible = true;
 			}).catch(e => console.log(e)).finally(() => this.loading--);
 		},
+		showHistory() {
+			this.historyList = Object.keys(localStorage).filter(item => item.indexOf(this.projectName) === 0 && item.indexOf(this.config.db.database) !== -1 && item.indexOf(this.tableName) !== -1);
+			this.historyList = this.historyList.map(item => {
+				let temp = item.split(".")
+				return {
+					dbName: temp[1],
+					tableName: temp[2],
+					createTime: temp[3],
+					rawKey: item
+				}
+			})
+			this.historyDrawer = true;
+		},
+		loadFromHistory(rawKey) {
+			let history = JSON.parse(localStorage[rawKey])
+			this.fieldList = history.fieldList
+			this.config = history.config
+			this.historyDrawer = false
+			this.$message({ message: '载入成功', type: 'success' });
+		},
+		deleteHistory(rawKey) {
+			delete localStorage[rawKey]
+			this.showHistory()
+		},
 		generate(index, row) {
 			this.loading++;
 			let model = this.getModel();
@@ -154,6 +195,19 @@ export default {
 				return r;
 			})
 			axios.post('generate', { config, model }).then(res => {
+				// localStorage 示例 "xcrud-generator.dbName.tableName.createTime = json"
+				function fillZero(num) {
+					return (num > 9) ? num : '0' + num;
+				}
+				let now = new Date();
+				let month = fillZero(now.getMonth() + 1)
+				let date = fillZero(now.getDate())
+				let hour = fillZero(now.getHours())
+				let minutes = fillZero(now.getMinutes())
+				let seconds = fillZero(now.getSeconds())
+
+				let nowStr = `${now.getFullYear()}-${month}-${date} ${hour}:${minutes}:${seconds}`
+				localStorage[`${this.projectName}.${this.config.db.database}.${this.tableName}.${nowStr}`] = JSON.stringify({ config: this.config, fieldList: this.fieldList })
 				this.$message({ message: '生成成功', type: 'success' });
 				this.dialogVisible = false;
 			}).catch(e => console.log(e)).finally(() => this.loading--);
@@ -235,8 +289,11 @@ export default {
 	color: #2c3e50;
 	margin-top: 60px;
 } */
+.el-input-group__append, .el-input-group__prepend {
+	padding: 0 14px;
+}
 
 .monacoClass {
-	height: 70vh;
+	height: calc(100vh - 158px);
 }
 </style>
