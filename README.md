@@ -106,6 +106,8 @@ module.exports = {
 
 - 下划线转驼峰：`StrUtil.underscoreToCamel(str)`
 - 驼峰转下划线：`StrUtil.camelToUnderscore(str)`
+- 驼峰转短横线: `StrUtil.camelToKebab(str)`
+- 短横线转驼峰: `StrUtil.kebabToCamel(str)`
 - 首字母小写：`StrUtil.initialLowerCase(str)`
 - 首字母大写：`StrUtil.initialUpperCase(str)`
 - 全部小写：`StrUtil.toLowerCase(str)`

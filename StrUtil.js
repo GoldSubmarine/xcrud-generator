@@ -13,6 +13,19 @@ var StrUtil = {
         });
         return strResult.replace(/^\_/, '');
     },
+    // 驼峰转短横线
+    camelToKebab: (str) => {
+        let strResult = str.replace(/([A-Z])/g, function(all, letter){
+            return "-" + letter.toLowerCase();
+        });
+        return strResult.replace(/^-/, '');
+    },
+    // 短横线转驼峰
+    kebabToCamel: (str) => {
+        return str.replace(/-(\w)/g, function(all, letter){
+            return letter.toUpperCase();
+        });
+    },
     // 首字母小写
     initialLowerCase: (str) => {
         return str.replace(/^(\w)/g, function(all, letter){
