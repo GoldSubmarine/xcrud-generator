@@ -1,12 +1,15 @@
 {
   "name": "xcrud-generator",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "repository": "https://github.com/GoldSubmarine/xcrud-generator.git",
   "author": "charles <997462392@qq.com>",
   "license": "MIT",
   "scripts": {
     "dev": "vue-cli-service serve",
     "build": "vue-cli-service build"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
