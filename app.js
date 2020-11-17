@@ -70,7 +70,7 @@ function createCacheTable() {
 		  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='xcrud_generator 缓存表';
 		`
 		db.query(createTableSql, (error, results, fields) => {
-			if (error) console.log(error);
+			if (error) console.error(error);
 		})
 	}
 }
@@ -96,7 +96,10 @@ app.use(express.static(__dirname + "/dist"));
 //获取所有的表名
 app.get("/table/list", function(req, res) {
   db.query("show table status", function(error, results, fields) {
-    if (error) throw error;
+	if (error) {
+		console.error(error);
+		return;
+	}
     let arr = [];
     results.forEach(table => {
 			let createTime = ''
@@ -118,7 +121,10 @@ app.get("/table/list", function(req, res) {
 //根据表名获取字段信息
 app.get("/table/fields/info", function(req, res) {
   db.query(`show full columns from ${req.query.name}`, function(error, results, fields) {
-	if (error) throw error;
+	if (error) {
+		console.error(error);
+		return;
+	}
 	results.forEach(item => {
 		item.Type = item.Type.replace(/\(.+\)/, '');
 	})
@@ -149,7 +155,10 @@ app.post("/generate", function(req, res) {
 app.post("/cache", function(req, res) {
 	let cache = req.body
 	db.query(`INSERT INTO xcrud_generator_cache (table_name, cache_json, create_by, create_time) VALUES ('${cache.tableName}', '${cache.cacheJson}', '${config.user}', '${formateDateToString(new Date())}')`, (error, results, fields) => {
-		if (error) throw error;
+		if (error) {
+			console.error(error);
+			return;
+		}
 		res.send("ok")
 	})
 });
@@ -158,7 +167,10 @@ app.post("/cache", function(req, res) {
 app.get("/cache", function(req, res) {
 	let tableName = req.query.tableName
     db.query(`SELECT * FROM xcrud_generator_cache WHERE table_name = '${tableName}'`, (error, results, fields) => {
-		if (error) throw error;
+		if (error) {
+			console.error(error);
+			return;
+		}
 		res.send(results)
 	})
 });
@@ -167,7 +179,10 @@ app.get("/cache", function(req, res) {
 app.delete("/cache", function(req, res) {
 	let id = req.query.id
     db.query(`DELETE FROM xcrud_generator_cache WHERE id = ${id}`, (error, results, fields) => {
-		if (error) throw error;
+		if (error) {
+			console.error(error);
+			return;
+		}
 		res.send(results)
 	})
 });
