@@ -18,6 +18,8 @@ npm install xcrud-generator -g
 
 ```javascript
 module.exports = {
+    user: 'charles',    // 当前创建人（共享配置时，区分创建人）
+    cache: 'db',  // 历史配置存储方式：db、browser(default)
     // 数据库配置
     db: {
         host: '192.168.39.36',

@@ -55,6 +55,26 @@ let db = mysql.createConnection({
 	database: config.db.database,
 });
 
+// 如果cache模式是db模式
+function createCacheTable() {
+	if(config.cache === 'db') {
+		let createTableSql = `
+		CREATE TABLE IF NOT EXISTS xcrud_generator_cache (
+			id int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+			  table_name varchar(64) DEFAULT NULL COMMENT '表名',
+			cache_json text NOT NULL COMMENT '缓存的数据',
+			create_by varchar(32) DEFAULT NULL COMMENT '创建人',
+			create_time datetime DEFAULT NULL COMMENT '创建时间',
+			PRIMARY KEY (id) USING BTREE,
+			KEY table_name (table_name)
+		  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC COMMENT='xcrud_generator 缓存表';
+		`
+		db.query(createTableSql, (error, results, fields) => {
+			if (error) console.log(error);
+		})
+	}
+}
+
 //跨域
 app.all("*", function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -125,6 +145,33 @@ app.post("/generate", function(req, res) {
 	render(model, config, () => res.send("ok"));
 });
 
+//缓存历史配置
+app.post("/cache", function(req, res) {
+	let cache = req.body
+	db.query(`INSERT INTO xcrud_generator_cache (table_name, cache_json, create_by, create_time) VALUES ('${cache.tableName}', '${cache.cacheJson}', '${config.user}', '${formateDateToString(new Date())}')`, (error, results, fields) => {
+		if (error) throw error;
+		res.send("ok")
+	})
+});
+
+//获取历史配置
+app.get("/cache", function(req, res) {
+	let tableName = req.query.tableName
+    db.query(`SELECT * FROM xcrud_generator_cache WHERE table_name = '${tableName}'`, (error, results, fields) => {
+		if (error) throw error;
+		res.send(results)
+	})
+});
+
+//删除历史配置
+app.delete("/cache", function(req, res) {
+	let id = req.query.id
+    db.query(`DELETE FROM xcrud_generator_cache WHERE id = ${id}`, (error, results, fields) => {
+		if (error) throw error;
+		res.send(results)
+	})
+});
+
 // 数据库建立连接，服务启动
 db.connect(err => {
 	if(err) {
@@ -142,6 +189,7 @@ db.connect(err => {
 				process.exit();
 			}
 		});
+		createCacheTable()
 	}
 });
 
@@ -199,4 +247,14 @@ function strTransfer(str) {
 	str = StrUtil.initialLowerCase(str);
 
 	return str;
+}
+
+function formateDateToString(date) {
+	let Y = date.getFullYear() + '-';
+	let M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+	let D = date.getDate() + ' ';
+	let h = date.getHours() + ':';
+	let m = date.getMinutes() + ':';
+	let s = date.getSeconds();
+	return Y+M+D+h+m+s
 }

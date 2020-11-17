@@ -19,23 +19,23 @@
 			</el-table-column>
     	</el-table>
 		<!-- 🌱  -->
-		<el-drawer title="📣 生成代码" :visible.sync="dialogVisible" size="100%" direction="ttb" @close="handleClose" :wrapperClosable="false" :close-on-press-escape="false">
+		<el-drawer :title="`📣 生成代码 (${tableName})`" :visible.sync="dialogVisible" size="100%" direction="ttb" @close="handleClose" :wrapperClosable="false" :close-on-press-escape="false">
 			<div style="height: calc(100vh - 77px);">
 				<div v-show="!isMonacoShow">
 					<el-divider>🎉 生成模板 🎉</el-divider>
-					<el-row :gutter="20">
+					<div class="scroll">
 						<el-checkbox-group v-model="checkFileList" style="padding: 0 10px" size="medium">
-							<el-checkbox :label="output.template" border v-for="(output, index) in config.output" :key="index">{{ output.template }}</el-checkbox>
+							<el-checkbox style="margin-right: 10px" :label="output.template" border v-for="(output, index) in config.output" :key="index">{{ output.template }}</el-checkbox>
 						</el-checkbox-group>
-					</el-row>
+					</div>
 					<el-divider>🚀 混入变量 🚀</el-divider>
-					<el-row :gutter="20" v-if="this.config && this.config.mixin">
-						<el-col :span="3" v-for="(value,key) in this.config.mixin" :key="key" style="margin-bottom: 14px;">
-							<el-input v-model="config.mixin[key]"> -->
+					<div class="scroll" v-if="this.config && this.config.mixin">
+						<div style="display: inline-block;">
+							<el-input v-model="config.mixin[key]" class="mixin-input" width="300" v-for="(value,key) in this.config.mixin" :key="key" >
 								<template slot="prepend">{{ key }}</template>
 							</el-input>
-						</el-col>
-					</el-row>
+						</div>
+					</div>
 					<el-divider>✨ 数据库字段 ✨</el-divider>
 					<el-table height="calc(100vh - 400px)" border :data="fieldList" style="width: 100%">
 						<el-table-column type="index" align="center"></el-table-column>
@@ -65,15 +65,16 @@
 					</el-table>
 				</div>
 				<div ref="monaco" class="monacoClass" v-show="isMonacoShow"></div>
-				<el-drawer title="历史记录" :append-to-body="true" :visible.sync="historyDrawer" size="700px">
+				<el-drawer title="历史记录" :append-to-body="true" :visible.sync="historyDrawer" size="800px">
 					<el-table :data="historyList" stripe :default-sort = "{prop: 'createTime', order: 'descending'}">
 						<el-table-column prop="dbName" label="数据库" align="center" show-overflow-tooltip></el-table-column>
 						<el-table-column prop="tableName" label="表名" align="center" show-overflow-tooltip></el-table-column>
 						<el-table-column prop="createTime" label="日期" align="center" show-overflow-tooltip></el-table-column>
+						<el-table-column prop="createBy" label="创建人" align="center" show-overflow-tooltip></el-table-column>
 						<el-table-column label="操作" align="center">
 							<template slot-scope="scope">
-								<el-button size="mini" type="success" plain @click="loadFromHistory(scope.row.rawKey)">载入</el-button>
-								<el-button size="mini" type="danger" plain @click="deleteHistory(scope.row.rawKey)">删除</el-button>
+								<el-button size="mini" type="success" plain @click="loadFromHistory(scope.row.cacheJson)">载入</el-button>
+								<el-button size="mini" type="danger" plain @click="deleteHistory(scope.row.id)">删除</el-button>
 							</template>
 						</el-table-column>
 					</el-table>
@@ -158,28 +159,53 @@ export default {
 			}).catch(e => console.log(e)).finally(() => this.loading--);
 		},
 		showHistory() {
-			this.historyList = Object.keys(localStorage).filter(item => item.indexOf(this.projectName) === 0 && item.indexOf(this.config.db.database) !== -1 && item.indexOf(this.tableName) !== -1);
-			this.historyList = this.historyList.map(item => {
-				let temp = item.split(".")
-				return {
-					dbName: temp[1],
-					tableName: temp[2],
-					createTime: temp[3],
-					rawKey: item
-				}
-			})
+			if(this.config.cache === 'db') {
+				this.loading++;
+				axios.get(`/cache?tableName=${this.tableName}`).then(res => {
+					this.historyList = res.data.map(item => {
+						return {
+							id: item.id,
+							dbName: this.config.db.database,
+							tableName: item.table_name,
+							cacheJson: item.cache_json,
+							createTime: item.create_time.replace('T', ' ').replace(/\..+/, ''),
+							createBy: item.create_by
+						}
+					});
+				}).catch(e => console.log(e)).finally(() => this.loading--);
+			} else {
+				this.historyList = Object.keys(localStorage).filter(item => item.indexOf(this.projectName) === 0 && item.indexOf(this.config.db.database) !== -1 && item.indexOf(this.tableName) !== -1);
+				this.historyList = this.historyList.map(item => {
+					let temp = item.split(".")
+					return {
+						id: item,
+						dbName: temp[1],
+						tableName: temp[2],
+						createTime: temp[3],
+						cacheJson: localStorage[item],
+						createBy: 'browser'
+					}
+				})
+			}
 			this.historyDrawer = true;
 		},
-		loadFromHistory(rawKey) {
-			let history = JSON.parse(localStorage[rawKey])
+		loadFromHistory(cacheJson) {
+			let history = JSON.parse(cacheJson)
 			this.fieldList = history.fieldList
 			this.config = history.config
 			this.historyDrawer = false
 			this.$message({ message: '载入成功', type: 'success' });
 		},
-		deleteHistory(rawKey) {
-			delete localStorage[rawKey]
-			this.showHistory()
+		deleteHistory(id) {
+			if(this.config.cache === 'db') {
+				axios.delete('cache?id=' + id).then(res => {
+					this.$message({ message: '删除成功', type: 'success' })
+					this.showHistory()
+				}).catch(e => this.$message({ message: '删除失败', type: 'error' }))
+			} else {
+				delete localStorage[id]
+				this.showHistory()
+			}
 		},
 		generate(index, row) {
 			this.loading++;
@@ -196,6 +222,21 @@ export default {
 			})
 			axios.post('generate', { config, model }).then(res => {
 				// localStorage 示例 "xcrud-generator.dbName.tableName.createTime = json"
+
+				this.saveCache();
+				this.$message({ message: '生成成功', type: 'success' });
+				this.dialogVisible = false;
+			}).catch(e => console.log(e)).finally(() => this.loading--);
+		},
+		saveCache() {
+			let cacheJson = JSON.stringify({ config: this.config, fieldList: this.fieldList })
+			if(this.config.cache === 'db') {
+				let param = {
+					tableName: this.tableName,
+					cacheJson: cacheJson
+				}
+				axios.post('cache', param).catch(e => this.$message({ message: '缓存配置失败', type: 'error' }))
+			} else {
 				function fillZero(num) {
 					return (num > 9) ? num : '0' + num;
 				}
@@ -205,12 +246,9 @@ export default {
 				let hour = fillZero(now.getHours())
 				let minutes = fillZero(now.getMinutes())
 				let seconds = fillZero(now.getSeconds())
-
 				let nowStr = `${now.getFullYear()}-${month}-${date} ${hour}:${minutes}:${seconds}`
-				localStorage[`${this.projectName}.${this.config.db.database}.${this.tableName}.${nowStr}`] = JSON.stringify({ config: this.config, fieldList: this.fieldList })
-				this.$message({ message: '生成成功', type: 'success' });
-				this.dialogVisible = false;
-			}).catch(e => console.log(e)).finally(() => this.loading--);
+				localStorage[`${this.projectName}.${this.config.db.database}.${this.tableName}.${nowStr}`] = cacheJson
+			}
 		},
 		getModel() {
 			let model = Object.assign({}, this.config.mixin);
@@ -289,6 +327,31 @@ export default {
 	color: #2c3e50;
 	margin-top: 60px;
 } */
+
+.mixin-input {
+	width: 240px;
+	margin-left: 20px;
+}
+
+.scroll {
+	text-align: center;
+	white-space: nowrap;
+	overflow-x: scroll;
+	overflow-y: hidden;
+}
+/* 最为关键得两个样式代码，可以设置全局滚动条样式，也可以按需设置 */
+::-webkit-scrollbar {
+	/* 设置竖向滚动条的宽度 */
+	width: 7px;
+	/* 设置横向滚动条的高度 */
+	height: 7px;
+}
+::-webkit-scrollbar-thumb {
+	/*滚动条的背景色*/
+	background-color: #c7c9cc;
+	border-radius: 35px;
+	position: relative;
+}
 .el-input-group__append, .el-input-group__prepend {
 	padding: 0 14px;
 }

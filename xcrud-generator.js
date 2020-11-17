@@ -1,9 +1,11 @@
 module.exports = {
+    user: 'charles',
+    cache: 'db',  // db、browser(default)
     db: {
-      host: '192.168.39.36',
+      host: 'localhost',
       port: 3306,
       user: 'root',
-      password: 'root',
+      password: '',
       database: 'submarine'
     },
     mixin: {    // 混入的变量
